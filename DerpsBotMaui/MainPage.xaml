@@ -70,6 +70,15 @@
             TextColor="black"
             Command="{Binding RightCommand}"/>
 
+        <Button 
+            Text="Kata"
+            Grid.Row="3"
+            Grid.Column="0"
+            Margin="5"
+            BackgroundColor="#c3e2fa"
+            TextColor="black"
+            Command="{Binding Kata}"/>
+
 
         <Button 
             Text="Down Left"

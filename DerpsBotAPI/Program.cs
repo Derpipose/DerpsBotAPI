@@ -44,9 +44,51 @@ app.Run();
 public class movingClass {
 
     private static string _moveStrategy = "HOLD"; // Default move strategy
+    private static int moveNum = 1;
 
     public List<Move> MakeMoves(MoveRequest request) {
         List<Move> moves = new();
+
+        if (_moveStrategy == "Kata")
+        {
+            foreach (var unit in request.Units)
+            {
+                switch (moveNum)
+                {
+                    case 1:
+                        unit.Location.MoveNorthWest(1);
+                        break;
+                    case 2:
+                        unit.Location.MoveWest(1);
+                        break;
+                    case 3:
+                        unit.Location.MoveSouthWest(1);
+                        break;
+                    case 4:
+                        unit.Location.MoveSouthEast(1);
+                        break;
+                    case 5:
+                        unit.Location.MoveEast(1);
+                        break;
+                    case 6:
+                        unit.Location.MoveNorthEast(1);
+                        break;
+                    default: 
+                        throw new ArgumentException("moveNum was an unexpected value.");
+                }
+                
+            }
+
+            if (moveNum >= 5)
+            {
+                moveNum++;
+
+            }
+            else
+            {
+                moveNum = 1;
+            }
+        }
 
         foreach (var unit in request.Units) {
             Coordinate newLocation = _moveStrategy switch {
@@ -72,5 +114,6 @@ public class movingClass {
         _moveStrategy = strat;
     }
 
+    
 
 }
