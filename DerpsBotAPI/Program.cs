@@ -1,3 +1,6 @@
+
+using BadgerClan.Logic;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -14,7 +17,11 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-//app.MapPost("/", (MoveRequest request) => /*//todo: Logic//*/ );
+app.MapPost("/", (MoveRequest request) => {
+    List<Move> moves = new();
+    MoveResponse response = new MoveResponse(moves);
+    return response;
+}).WithName("SendMoveRequest");
 
 app.UseHttpsRedirection();
 
