@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using DerpsBotMaui.ViewModel;
+using Microsoft.Extensions.Logging;
 
 namespace DerpsBotMaui {
     public static class MauiProgram {
@@ -15,6 +16,8 @@ namespace DerpsBotMaui {
     		builder.Logging.AddDebug();
 #endif
             builder.Services.AddSingleton<HttpClient>();
+            builder.Services.AddSingleton<MainPageViewModel>();
+            builder.Services.AddSingleton<MainPage>();
             return builder.Build();
         }
     }
