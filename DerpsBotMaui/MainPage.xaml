@@ -90,6 +90,15 @@
             TextColor="black"
             Command="{Binding DownRightCommand}"/>
 
+        <Button 
+            Text="Corner"
+            Grid.Row="3"
+            Grid.Column="5"
+            Margin="5"
+            BackgroundColor="#c3e2fa"
+            TextColor="black"
+            Command="{Binding CornerCommand}"/>
+
     </Grid>
 
 </ContentPage>

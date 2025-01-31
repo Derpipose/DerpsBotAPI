@@ -26,6 +26,7 @@ namespace DerpsBotMaui.ViewModel {
         public ICommand DownLeftCommand { get; }
         public ICommand DownRightCommand { get; }
         public ICommand StopCommand { get; }
+        public ICommand CornerCommand { get; }
 
         private async Task UpLeft() => await client.GetAsync("http://localhost:5235/change/NW");
         private async Task UpRight() => await client.GetAsync("http://localhost:5235/change/NE");
@@ -34,6 +35,7 @@ namespace DerpsBotMaui.ViewModel {
         private async Task DownLeft() => await client.GetAsync("http://localhost:5235/change/SW");
         private async Task DownRight() => await client.GetAsync("http://localhost:5235/change/SE");
         private async Task Stop() => await client.GetAsync("http://localhost:5235/change/HOLD");
+        private async Task Corner() => await client.GetAsync("http://localhost:5235/change/CORNER");
 
     }
 }
