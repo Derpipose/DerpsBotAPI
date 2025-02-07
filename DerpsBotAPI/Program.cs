@@ -25,6 +25,8 @@ app.MapGet("/change/{input}", (string input, movingClass mc) => {
 
 });
 
+app.MapGet("/" , () => "I did a working thing!");
+
 app.MapPost("/", (MoveRequest request, movingClass mc) => {
 
     List<Move> moves = new();
