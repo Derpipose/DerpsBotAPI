@@ -85,36 +85,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          deploy:
-    runs-on: windows-latest
-    needs: build
-    environment:
-      name: 'Production'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    permissions:
-      id-token: write #This is required for requesting the JWT
-      contents: read #This is required for actions/checkout
-
-    steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v4
-        with:
-          name: .net-app
-      
-      - name: Login to Azure
-        uses: azure/login@v2
-        with:
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_88B0A60094404329A16B35F7663DB0BC }}
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_FDC36D6848D4447CBF2C17161B9C290B }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_3325D9CEF9A54753B8E0B801103D1004 }}
-
-      - name: Deploy to Azure Web App
-        id: deploy-to-webapp
-        uses: azure/webapps-deploy@v3
-        with:
-          app-name: 'DerpBotTest2'
-          slot-name: 'Production'
-          package: .
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
