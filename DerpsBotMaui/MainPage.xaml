@@ -100,31 +100,39 @@
             BackgroundColor="#c3e2fa"
             TextColor="black"
             Command="{Binding CornerCommand}"/>
+        
+        
 
         <HorizontalStackLayout Spacing="10"
-                               Grid.Row="4"
-                               Grid.Column="0"
-                               Grid.ColumnSpan="6"
-                               Padding="10">
+                       Grid.Row="4"
+                       Grid.Column="0"
+                       Grid.ColumnSpan="6"
+                       Padding="10">
             <Label Text="Select Server:" VerticalOptions="Center"/>
-            <Picker 
-        ItemsSource="{Binding ServerNicknames}" 
-        SelectedItem="{Binding SelectedServerNickname, Mode=TwoWay}"
-        Title="Choose a server"
-        WidthRequest="200"/>
-            <Entry 
-        x:Name="ServerNicknameEntry"
-        Placeholder="Nickname"
-        WidthRequest="100"
-        Text="{Binding NewServerNickname, Mode=TwoWay}"/>
-            <Entry 
-        x:Name="ServerUrlEntry"
-        Placeholder="Server URL"
-        WidthRequest="200"
-        Text="{Binding NewServerUrl, Mode=TwoWay}"/>
-            <Button 
-        Text="Add Server"
-        Command="{Binding AddServerCommand}"/>
+            <StackLayout>
+                <BindableLayout.ItemsSource>
+                    <Binding Path="ServersList"/>
+                </BindableLayout.ItemsSource>
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate>
+                        <RadioButton 
+                            Content="{Binding Nickname}" 
+                            IsChecked="{Binding IsSelected, Mode=TwoWay}" 
+                            GroupName="ServerGroup"
+                            CheckedChanged="OnServerSelected"/>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </StackLayout>
+            <Entry x:Name="ServerNicknameEntry"
+               Placeholder="Nickname"
+               WidthRequest="100"
+               Text="{Binding NewServerNickname, Mode=TwoWay}"/>
+            <Entry x:Name="ServerUrlEntry"
+               Placeholder="Server URL"
+               WidthRequest="200"
+               Text="{Binding NewServerUrl, Mode=TwoWay}"/>
+            <Button Text="Add Server"
+                Command="{Binding AddServerCommand}"/>
         </HorizontalStackLayout>
 
     </Grid>

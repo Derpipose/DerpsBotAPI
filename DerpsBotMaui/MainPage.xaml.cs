@@ -10,6 +10,15 @@ namespace DerpsBotMaui {
             BindingContext = mpvm;
         }
 
+        private void OnServerSelected(object sender, CheckedChangedEventArgs e) {
+            if (sender is RadioButton radioButton && e.Value is bool isChecked && isChecked) {
+                if (radioButton.BindingContext is ServerItem selectedServer) {
+                    var viewModel = (MainPageViewModel)BindingContext;
+                    viewModel.SelectedServerNickname = selectedServer.Nickname;
+                }
+            }
+        }
+
     }
 
 }

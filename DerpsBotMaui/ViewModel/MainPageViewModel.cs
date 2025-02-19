@@ -1,40 +1,56 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Windows.Input;
 
 namespace DerpsBotMaui.ViewModel {
-    public partial class MainPageViewModel {
+    public class ServerItem : INotifyPropertyChanged {
+        public string Nickname { get; set; }
+        public string Url { get; set; }
+
+        private bool isSelected;
+        public bool IsSelected {
+            get => isSelected;
+            set {
+                if (isSelected != value) {
+                    isSelected = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null) {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+    }
+
+    public partial class MainPageViewModel : INotifyPropertyChanged {
         private readonly HttpClient client;
         private string baseUrl;
 
-        // Dictionary to store servers with nicknames
-        public Dictionary<string, string> Servers { get; private set; } = new Dictionary<string, string>
+        public ObservableCollection<ServerItem> ServersList { get; private set; } = new ObservableCollection<ServerItem>
         {
-            { "Local", "http://localhost:5235" }
+            new ServerItem { Nickname = "Local", Url = "http://localhost:5235", IsSelected = true }
         };
 
         private string selectedServerNickname;
         public string SelectedServerNickname {
             get => selectedServerNickname;
             set {
-                if (Servers.ContainsKey(value)) {
+                if (ServersList.Any(s => s.Nickname == value)) {
                     selectedServerNickname = value;
-                    baseUrl = Servers[value];
+                    var selectedServer = ServersList.First(s => s.Nickname == value);
+                    baseUrl = selectedServer.Url;
+
+                    foreach (var server in ServersList) {
+                        server.IsSelected = server.Nickname == value;
+                    }
+
+                    OnPropertyChanged();
                 }
             }
-        }
-
-        public MainPageViewModel(HttpClient _client) {
-            client = _client;
-            SelectedServerNickname = "Local"; // Default to "Local"
-
-            UpLeftCommand = new AsyncRelayCommand(UpLeft);
-            UpRightCommand = new AsyncRelayCommand(UpRight);
-            LeftCommand = new AsyncRelayCommand(Left);
-            RightCommand = new AsyncRelayCommand(Right);
-            DownLeftCommand = new AsyncRelayCommand(DownLeft);
-            DownRightCommand = new AsyncRelayCommand(DownRight);
-            StopCommand = new AsyncRelayCommand(Stop);
-            CornerCommand = new AsyncRelayCommand(Corner);
         }
 
         public ICommand UpLeftCommand { get; }
@@ -45,27 +61,56 @@ namespace DerpsBotMaui.ViewModel {
         public ICommand DownRightCommand { get; }
         public ICommand StopCommand { get; }
         public ICommand CornerCommand { get; }
+        public ICommand SelectServerCommand { get; }
+        public ICommand AddServerCommand { get; }
 
-        // Method to add a new server
-        public void AddServer(string nickname, string url) {
-            if (!Servers.ContainsKey(nickname)) {
-                Servers[nickname] = url;
+        public string NewServerNickname { get; set; }
+        public string NewServerUrl { get; set; }
+
+        public MainPageViewModel(HttpClient _client) {
+            client = _client;
+            SelectedServerNickname = "Local"; // Default selection
+
+            UpLeftCommand = new AsyncRelayCommand(UpLeft);
+            UpRightCommand = new AsyncRelayCommand(UpRight);
+            LeftCommand = new AsyncRelayCommand(Left);
+            RightCommand = new AsyncRelayCommand(Right);
+            DownLeftCommand = new AsyncRelayCommand(DownLeft);
+            DownRightCommand = new AsyncRelayCommand(DownRight);
+            StopCommand = new AsyncRelayCommand(Stop);
+            CornerCommand = new AsyncRelayCommand(Corner);
+
+            SelectServerCommand = new RelayCommand<ServerItem>(SelectServer);
+            AddServerCommand = new RelayCommand(AddServer);
+        }
+
+        private void SelectServer(ServerItem server) {
+            if (server != null) {
+                SelectedServerNickname = server.Nickname;
             }
         }
 
-        // Method to update an existing server's nickname
-        public void UpdateServerNickname(string oldNickname, string newNickname) {
-            if (Servers.ContainsKey(oldNickname) && !Servers.ContainsKey(newNickname)) {
-                string url = Servers[oldNickname];
-                Servers.Remove(oldNickname);
-                Servers[newNickname] = url;
+        private void AddServer() {
+            if (!string.IsNullOrEmpty(NewServerNickname) && !string.IsNullOrEmpty(NewServerUrl) &&
+                !ServersList.Any(s => s.Nickname == NewServerNickname)) {
+                ServersList.Add(new ServerItem { Nickname = NewServerNickname, Url = NewServerUrl, IsSelected = false });
+                NewServerNickname = string.Empty;
+                NewServerUrl = string.Empty;
+                OnPropertyChanged(nameof(NewServerNickname));
+                OnPropertyChanged(nameof(NewServerUrl));
+            }
+        }
 
-                // Update selected server if necessary
-                if (selectedServerNickname == oldNickname) {
-                    SelectedServerNickname = newNickname;
+        private void OnServerSelected(object sender, CheckedChangedEventArgs e) {
+            if (sender is RadioButton radioButton && e.Value is bool isChecked && isChecked) {
+                if (radioButton.BindingContext is ServerItem selectedServer) {
+                    this.SelectedServerNickname = selectedServer.Nickname;
                 }
             }
         }
+
+
+
 
         private async Task UpLeft() => await SendCommand("NW");
         private async Task UpRight() => await SendCommand("NE");
@@ -80,6 +125,11 @@ namespace DerpsBotMaui.ViewModel {
             if (!string.IsNullOrEmpty(baseUrl)) {
                 await client.GetAsync($"{baseUrl}/change/{command}");
             }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null) {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }
